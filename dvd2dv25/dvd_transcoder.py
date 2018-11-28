@@ -33,7 +33,7 @@ def main():
 
     #handling the input args. This is kind of a mess in this version
     if args.i is None:
-        print bcolors.FAIL + "Please enter an input file!" + bcolors.ENDC
+        print(bcolors.FAIL + "Please enter an input file!" + bcolors.ENDC)
         quit()
     if args.f is None:
         output_format = "v210"
@@ -66,30 +66,30 @@ def main():
         ffmpeg_command = "/usr/local/bin/ffmpeg "
     else:
         ffmpeg_command = "/usr/local/bin/ffmpeg -hide_banner -loglevel panic "
-        print "Running in Verbose Mode"
+        print("Running in Verbose Mode")
 
-    print "Removing Temporary Files"
+    print("Removing Temporary Files")
 
     #This parts mounts the iso
-    print "Mounting ISO..."
+    print("Mounting ISO...")
     mount_point = mount_Image(args.i)
-    print "Finished Mounting ISO!"
+    print("Finished Mounting ISO!")
 
     ##this part processes the vobs
 
     ##move each vob over as a seperate file, adding each vob to a list to be concatenated
-    print "Moving VOBs to Local directory..."
+    print("Moving VOBs to Local directory...")
     if move_VOBS_to_local(args.i, mount_point, ffmpeg_command):
-        print "Finished moving VOBs to local directory!"
+        print("Finished moving VOBs to local directory!")
     else:
-        print "No VOBs found. Quitting!"
+        print("No VOBs found. Quitting!")
 
     #concatenate vobs into a sungle file, format of the user's selection
     concatenate_VOBS(args.i, transcode_string, output_ext, ffmpeg_command)
 
 
     #CLEANUP
-    print "Removing Temporary Files..."
+    print("Removing Temporary Files...")
     #Delete all fo the leftover files
     os.remove(args.i + ".mylist.txt")
     for the_file in os.listdir(args.i + ".VOBS"):
@@ -101,12 +101,12 @@ def main():
         except Exception as e:
             print(e)
     os.rmdir(args.i + ".VOBS")
-    print "Finished Removing Temporary Files!"
+    print("Finished Removing Temporary Files!")
 
     #This parts unmounts the iso
-    print "Unmounting ISO"
+    print("Unmounting ISO")
     unmount_Image(mount_point)
-    print "Finished Unmounting ISO!"
+    print("Finished Unmounting ISO!")
 
     return
 
@@ -200,15 +200,15 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
     extension = os.path.splitext(first_file_path)[1]
     output_path = first_file_path.replace(extension,output_ext)
     ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
-    print ffmpeg_vob_concat_string
+    print(ffmpeg_vob_concat_string)
     run_command(ffmpeg_vob_concat_string)
 
 def run_command(command):
     try:
         run = subprocess.call([command], shell=True)
         return run
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return e
 
 # Used to make colored text
