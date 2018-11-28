@@ -26,7 +26,7 @@ def main():
         createFinal(PathToOutput, ac, thisHeight, thisDAR)
     deleteWorkFiles(PathToOutput)
     print 'DONE!'
-    
+
 def deleteWorkFiles(OutputPath):
     #Deletes /voblist and /concats in the output folder
     rmtree(os.path.join(OutputPath, 'voblists'))
