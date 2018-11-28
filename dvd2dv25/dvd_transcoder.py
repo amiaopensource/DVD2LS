@@ -118,11 +118,11 @@ def mount_Image(ISO_Path):
     ##figure out what the mountpoint will be
     while mount_point_exists:
         mount_point = "ISO_Volume_" + str(mount_increment)
-        mount_point_exists = os.path.isdir("/Volumes/" + mount_point)
+        mount_point_exists = os.path.isdir("/tmp/" + mount_point)
         mount_increment = mount_increment + 1
 
     ##mount ISO
-    mount_point = "/Volumes/" + mount_point
+    mount_point = "/tmp/" + mount_point
     mount_command = "hdiutil attach '" + ISO_Path + "' -mountpoint " + mount_point
     os.mkdir(mount_point)
     run_command(mount_command)
@@ -151,8 +151,7 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
                 vobNum = vobNum.split(".")[0]
                 vobNum = int(vobNum)
                 if vobNum > 0:
-                	input_vobList.append(dirName + "/" + fname)
-
+                    input_vobList.append(dirName + "/" + fname)
     ##Returns False if there are no VOBs found, otherwise it moves on
     if len(input_vobList) == 0:
         has_vobs = False
@@ -172,9 +171,12 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
     input_vobList_length = len(input_vobList)
     iterCount = 1
     for v in input_vobList:
+        print(v)
         v_name = v.split("/")[-1]
+        print(v_name)
         out_vob_path = first_file_path + ".VOBS/" + v_name
-        ffmpeg_vob_copy_string = ffmpeg_command + " -i " + v + " -map 0:v:0 -map 0:a:0 -f vob -b:v 9M -b:a 192k -y '" + out_vob_path + "'"
+        ffmpeg_vob_copy_string = ffmpeg_command + " -i " + v + " -map 0:v:0 -map 0:a:0? -f vob -b:v 9M -b:a 192k -y '" + out_vob_path + "'"
+        print(ffmpeg_vob_copy_string)
         run_command(ffmpeg_vob_copy_string)
 
 
