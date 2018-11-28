@@ -123,7 +123,14 @@ def mount_Image(ISO_Path):
 
     ##mount ISO
     mount_point = "/tmp/" + mount_point
-    mount_command = "hdiutil attach '" + ISO_Path + "' -mountpoint " + mount_point
+
+    mount_command = [
+        "hdiutil",
+        "attach", ISO_Path,
+        "-mountpoint",
+        mount_point
+    ]
+
     os.mkdir(mount_point)
     run_command(mount_command)
 
@@ -131,7 +138,10 @@ def mount_Image(ISO_Path):
 
 
 def unmount_Image(mount_point):
-    unmount_command = "hdiutil detach '" + mount_point + "'"
+    unmount_command = [
+        "hdiutil",
+        "detach", mount_point
+    ]
     run_command(unmount_command)
     ##os.remove(mount_point) thought we needed this but i guess not...
     return True
@@ -175,9 +185,19 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
         v_name = v.split("/")[-1]
         print(v_name)
         out_vob_path = first_file_path + ".VOBS/" + v_name
-        ffmpeg_vob_copy_string = ffmpeg_command + " -i " + v + " -map 0:v:0 -map 0:a:0? -f vob -b:v 9M -b:a 192k -y '" + out_vob_path + "'"
-        print(ffmpeg_vob_copy_string)
-        run_command(ffmpeg_vob_copy_string)
+
+        command = [
+            ffmpeg_command,
+            "-i ", v,
+            "-map", "0:v:0",
+            "-map 0:a:0? -f vob -b:v 9M -b:a 192k -y",
+            out_vob_path
+        ]
+
+                                                                                                                   "]
+
+        print(" ".join(command))
+        run_command(command)
 
 
     ##see if mylist already exists, if so delete it.
@@ -198,20 +218,28 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
     return has_vobs
 
 def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_command):
+    command = [
+        "ffmpeg",
+        "-vsync", "0", "-f", "concat", "-safe", "0",
+        "-i"
+    ]
     catList = first_file_path + ".mylist.txt"
+    command.append(catList)
+    command += transcode_string.split()
+
     extension = os.path.splitext(first_file_path)[1]
     output_path = first_file_path.replace(extension,output_ext)
-    ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
-    print(ffmpeg_vob_concat_string)
-    run_command(ffmpeg_vob_concat_string)
+    command.append(output_path)
+    print(" ".join(command))
+    run_command(command)
+
+    # ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
+
+    # print(ffmpeg_vob_concat_string)
+    # run_command(ffmpeg_vob_concat_string)
 
 def run_command(command):
-    try:
-        run = subprocess.call([command], shell=True)
-        return run
-    except Exception as e:
-        print(e)
-        return e
+    return subprocess.check_call(command, shell=True)
 
 # Used to make colored text
 class bcolors:
