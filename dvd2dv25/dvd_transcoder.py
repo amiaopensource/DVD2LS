@@ -37,15 +37,15 @@ def main():
         quit()
     if args.f is None:
         output_format = "v210"
-        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24l "
+        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24le "
         output_ext = ".mov"
     elif "v210" in args.f:
         output_format = "v210"
-        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24l "
+        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24le "
         output_ext = ".mov"
     elif "ProRes" in args.f:
         output_format = "ProRes"
-        transcode_string = " -c:v prores -profile:v 3 -c:a pcm_s24le "
+        transcode_string = " -c:v prores_ks -profile:v 3 -c:a pcm_s24le "
         output_ext = ".mov"
     elif "H.264" in args.f:
         output_format = "H.264"
@@ -53,11 +53,11 @@ def main():
         output_ext = ".mp4"
     elif "FFv1" in args.f:
         output_format = "FFv1"
-        transcode_string = " -map 0 -dn -c:v ffv1 -level 3 -coder 1 -context 1 -g 1 -slicecrc 1 -slices 24 -field_order bb -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -c:a copy "
+        transcode_string = " -map 0 -dn -c:v ffv1 -level 3 -coder 1 -context 1 -g 1 -slicecrc 1 -slices 24 -field_order bt -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -c:a copy "
         output_ext = ".mkv"
     else:
         output_format = "v210"
-        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24l "
+        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24le "
         output_ext = ".mov"
     if args.o is None:
         output_path = os.path.dirname(args.i) + "/"
