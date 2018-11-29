@@ -72,21 +72,3 @@ def test_concatenate_VOBS(no_running):
             '/tmp/dummy.mov'
         ]
         assert expected_args == command.cli_args
-
-
-def test_move_VOBS_to_local(no_running):
-    try:
-        dvd_transcoder.move_VOBS_to_local(
-            first_file_path="/tmp/dummy.iso",
-            mount_point="/tmp/ISO_Volume_0",
-            ffmpeg_command="ffmpeg"
-        )
-    except GetCommand as command:
-        expected_args = [
-            "hdiutil",
-            "attach",
-            "dummy.iso",
-            "-mountpoint",
-            "/tmp/ISO_Volume_0"
-        ]
-        assert expected_args == command.cli_args
