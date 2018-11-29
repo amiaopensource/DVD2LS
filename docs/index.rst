@@ -10,6 +10,8 @@ Welcome to dvd2dv25's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   about
+
 
 
 Indices and tables
