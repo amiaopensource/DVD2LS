@@ -20,7 +20,9 @@
 # -- Project information -----------------------------------------------------
 
 project = 'dvd2dv25'
+# TODO: Set copyright info
 copyright = '2018, Henry Borchers'
+# TODO: Set authors info
 author = 'Henry Borchers'
 
 # The short X.Y version
@@ -130,7 +132,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'dvd2dv25.tex', 'dvd2dv25 Documentation',
-     'Henry Borchers', 'manual'),
+     [author], 'manual'),
 ]
 
 
