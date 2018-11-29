@@ -12,6 +12,15 @@ directory
 
 `python setup.py install`
 
+## Documentation
+
+To build HTML documentation, open a terminal and run the following command from the dvd2dv25 
+directory  
+
+`python setup.py build_sphinx`
+
+**NOTE:** This requires the 
+[Sphinx Python package](https://pypi.org/project/Sphinx/) to be installed.
 
 ## Development
 
@@ -19,3 +28,4 @@ if you have pipenv installed you can create a development environment with
 the following command run inside the dvd2dv25 source directory.
 
 `pipenv install --dev`
+
