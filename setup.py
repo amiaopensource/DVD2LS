@@ -11,5 +11,10 @@ setup(
     description='',
     test_suite="tests",
     tests_require=['pytest'],
-    setup_requires=['pytest-runner']
+    setup_requires=['pytest-runner'],
+    entry_points={
+        'console_scripts': [
+            "dvd2dv25 = dvd2dv25.dvd_transcoder:main"
+        ]
+    }
 )
