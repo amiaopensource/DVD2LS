@@ -20,7 +20,7 @@ def no_running(monkeypatch):
     def print_mkdir(*args, **kwargs):
         pass
 
-    monkeypatch.setattr(subprocess, "call", return_command_instead)
+    monkeypatch.setattr(dvd_transcoder, "run_command", return_command_instead)
     monkeypatch.setattr(os, "mkdir", print_mkdir)
     return
 
@@ -34,7 +34,7 @@ def test_mount_Image(no_running):
             "attach",
             "dummy.iso",
             "-mountpoint",
-            "/tmp/ISO_Volume_0"
+            "/private/tmp/ISO_Volume_0"
         ]
         assert expected_args == command.cli_args
 
@@ -70,23 +70,5 @@ def test_concatenate_VOBS(no_running):
             "-profile:v", "3",
             "-c:a", "pcm_s24le",
             '/tmp/dummy.mov'
-        ]
-        assert expected_args == command.cli_args
-
-
-def test_move_VOBS_to_local(no_running):
-    try:
-        dvd_transcoder.move_VOBS_to_local(
-            first_file_path="/tmp/dummy.iso",
-            mount_point="/tmp/ISO_Volume_0",
-            ffmpeg_command="ffmpeg"
-        )
-    except GetCommand as command:
-        expected_args = [
-            "hdiutil",
-            "attach",
-            "dummy.iso",
-            "-mountpoint",
-            "/tmp/ISO_Volume_0"
         ]
         assert expected_args == command.cli_args
