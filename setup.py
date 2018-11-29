@@ -11,5 +11,5 @@ setup(
     description='',
     test_suite="tests",
     tests_require=['pytest'],
-    # setup_requires=['pytest-runner'],
+    setup_requires=['pytest-runner']
 )
