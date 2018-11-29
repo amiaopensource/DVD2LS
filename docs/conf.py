@@ -132,7 +132,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'dvd2dv25.tex', 'dvd2dv25 Documentation',
-     [author], 'manual'),
+     author, 'manual'),
 ]
 
 
