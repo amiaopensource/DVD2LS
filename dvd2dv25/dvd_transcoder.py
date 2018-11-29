@@ -236,7 +236,8 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
 def run_command(command):
     # output = subprocess.run(command, shell=True)
     # print(" ".join(command))
-    output = subprocess.run(command, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    output = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    output.communicate()
     # print(output.stdout)
     # print(output.stderr)
     return output.stdout,output.stderr
