@@ -130,8 +130,6 @@ def mount_Image(ISO_Path):
         mount_point,
     ]
 
-    print(" ".join(mount_command))
-
     os.mkdir(mount_point)
     run_command(mount_command)
 
@@ -186,12 +184,11 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
 
         command = ffmpeg_command.split(" ")
         command += [
-            "-i ", v,
+            "-i", v,
             "-map", "0:v:0","-map", "0:a:0?",
             "-f", "vob", "-b:v", "9M", "-b:a", "192k", "-y",
             out_vob_path
         ]
-        print(" ".join(command))
         # "]
         run_command(command)
 
@@ -238,8 +235,10 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
 
 def run_command(command):
     # output = subprocess.run(command, shell=True)
+    # print(" ".join(command))
     output = subprocess.run(command, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-
+    # print(output.stdout)
+    # print(output.stderr)
     return output.stdout,output.stderr
 
 # Used to make colored text
