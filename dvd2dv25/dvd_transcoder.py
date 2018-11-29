@@ -16,21 +16,18 @@ import shlex  # used for properly splitting the ffmpeg/rsync strings
 import argparse  # used for parsing input arguments
 import time
 
-
 def main():
+
+
     media_info_list = []
 
     ####init the stuff from the cli########
-    parser = argparse.ArgumentParser(
-        description="dvd_transcoder version 0.1.0: Creates a concatenatd video file from an DVD-Video ISO")
-    parser.add_argument('-i', '--input', dest='i', help="the path to the input directory or files")
-    parser.add_argument('-f', '--format', dest='f',
-                        help="The output format (defaults to v210. Pick from v210, ProRes, H.264, FFv1)")
-    parser.add_argument('-o', '--output', dest='o',
-                        help="the output file path (optional, defaults to the same as the input)")
-    parser.add_argument('-v', '--verbose', dest='v', action='store_true', default=False,
-                        help='run in verbose mode (including ffmpeg info)')
-    # parser.add_argument('-c','--csvname',dest='c', help="the name of the csv file (optional)")
+    parser = argparse.ArgumentParser(description="dvd_transcoder version 0.1.0: Creates a concatenatd video file from an DVD-Video ISO")
+    parser.add_argument('-i','--input',dest='i', help="the path to the input directory or files")
+    parser.add_argument('-f','--format',dest='f', help="The output format (defaults to v210. Pick from v210, ProRes, H.264, FFv1)")
+    parser.add_argument('-o','--output',dest='o', help="the output file path (optional, defaults to the same as the input)")
+    parser.add_argument('-v','--verbose',dest='v',action='store_true',default=False,help='run in verbose mode (including ffmpeg info)')
+    #parser.add_argument('-c','--csvname',dest='c', help="the name of the csv file (optional)")
     args = parser.parse_args()
 
     # handling the input args. This is kind of a mess in this version
