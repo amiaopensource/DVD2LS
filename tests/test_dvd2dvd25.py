@@ -20,7 +20,7 @@ def no_running(monkeypatch):
     def print_mkdir(*args, **kwargs):
         pass
 
-    monkeypatch.setattr(subprocess, "call", return_command_instead)
+    monkeypatch.setattr(dvd_transcoder, "run_command", return_command_instead)
     monkeypatch.setattr(os, "mkdir", print_mkdir)
     return
 
@@ -34,7 +34,7 @@ def test_mount_Image(no_running):
             "attach",
             "dummy.iso",
             "-mountpoint",
-            "/tmp/ISO_Volume_0"
+            "/private/tmp/ISO_Volume_0"
         ]
         assert expected_args == command.cli_args
 
