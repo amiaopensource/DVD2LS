@@ -11,6 +11,7 @@ Welcome to dvd2dv25's documentation!
    :caption: Contents:
 
    about
+   install
 
 
 
