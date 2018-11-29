@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # DVD Transcoder
-#Version History
+# Version History
 #   0.1.0 - 20180314
 #       Got it mostly working. current known issues:
 #           No Aspect Ratio Testing
@@ -10,28 +10,30 @@
 # import modules used here -- sys is a very standard one
 import os, sys
 import datetime
-import csv                          # used for creating the csv
-import subprocess                   # used for running ffmpeg, qcli, and rsync
-import shlex                        # used for properly splitting the ffmpeg/rsync strings
-import argparse                     # used for parsing input arguments
+import csv  # used for creating the csv
+import subprocess  # used for running ffmpeg, qcli, and rsync
+import shlex  # used for properly splitting the ffmpeg/rsync strings
+import argparse  # used for parsing input arguments
 import time
 
+
 def main():
-
-
     media_info_list = []
 
     ####init the stuff from the cli########
-    parser = argparse.ArgumentParser(description="dvd_transcoder version 0.1.0: Creates a concatenatd video file from an DVD-Video ISO")
-    parser.add_argument('-i','--input',dest='i', help="the path to the input directory or files")
-    parser.add_argument('-f','--format',dest='f', help="The output format (defaults to v210. Pick from v210, ProRes, H.264, FFv1)")
-    parser.add_argument('-o','--output',dest='o', help="the output file path (optional, defaults to the same as the input)")
-    parser.add_argument('-v','--verbose',dest='v',action='store_true',default=False,help='run in verbose mode (including ffmpeg info)')
-    #parser.add_argument('-c','--csvname',dest='c', help="the name of the csv file (optional)")
+    parser = argparse.ArgumentParser(
+        description="dvd_transcoder version 0.1.0: Creates a concatenatd video file from an DVD-Video ISO")
+    parser.add_argument('-i', '--input', dest='i', help="the path to the input directory or files")
+    parser.add_argument('-f', '--format', dest='f',
+                        help="The output format (defaults to v210. Pick from v210, ProRes, H.264, FFv1)")
+    parser.add_argument('-o', '--output', dest='o',
+                        help="the output file path (optional, defaults to the same as the input)")
+    parser.add_argument('-v', '--verbose', dest='v', action='store_true', default=False,
+                        help='run in verbose mode (including ffmpeg info)')
+    # parser.add_argument('-c','--csvname',dest='c', help="the name of the csv file (optional)")
     args = parser.parse_args()
 
-
-    #handling the input args. This is kind of a mess in this version
+    # handling the input args. This is kind of a mess in this version
     if args.i is None:
         print(bcolors.FAIL + "Please enter an input file!" + bcolors.ENDC)
         quit()
@@ -63,14 +65,14 @@ def main():
         output_path = os.path.dirname(args.i) + "/"
 
     if args.v:
-        ffmpeg_command = "/usr/local/bin/ffmpeg "
+        ffmpeg_command = "/usr/local/bin/ffmpeg"
     else:
-        ffmpeg_command = "/usr/local/bin/ffmpeg -hide_banner -loglevel panic "
+        ffmpeg_command = "/usr/local/bin/ffmpeg -hide_banner -loglevel panic"
         print("Running in Verbose Mode")
 
     print("Removing Temporary Files")
 
-    #This parts mounts the iso
+    # This parts mounts the iso
     print("Mounting ISO...")
     mount_point = mount_Image(args.i)
     print("Finished Mounting ISO!")
@@ -84,26 +86,25 @@ def main():
     else:
         print("No VOBs found. Quitting!")
 
-    #concatenate vobs into a sungle file, format of the user's selection
+    # concatenate vobs into a sungle file, format of the user's selection
     concatenate_VOBS(args.i, transcode_string, output_ext, ffmpeg_command)
 
-
-    #CLEANUP
+    # CLEANUP
     print("Removing Temporary Files...")
-    #Delete all fo the leftover files
+    # Delete all fo the leftover files
     os.remove(args.i + ".mylist.txt")
     for the_file in os.listdir(args.i + ".VOBS"):
         file_path = os.path.join(args.i + ".VOBS", the_file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except Exception as e:
             print(e)
     os.rmdir(args.i + ".VOBS")
     print("Finished Removing Temporary Files!")
 
-    #This parts unmounts the iso
+    # This parts unmounts the iso
     print("Unmounting ISO")
     unmount_Image(mount_point)
     print("Finished Unmounting ISO!")
@@ -118,18 +119,21 @@ def mount_Image(ISO_Path):
     ##figure out what the mountpoint will be
     while mount_point_exists:
         mount_point = "ISO_Volume_" + str(mount_increment)
-        mount_point_exists = os.path.isdir("/tmp/" + mount_point)
+        mount_point_exists = os.path.isdir("/private/tmp/" + mount_point)
         mount_increment = mount_increment + 1
 
     ##mount ISO
-    mount_point = "/tmp/" + mount_point
+    mount_point = "/private/tmp/" + mount_point
 
     mount_command = [
         "hdiutil",
-        "attach", ISO_Path,
+        "attach",
+        ISO_Path,
         "-mountpoint",
-        mount_point
+        mount_point,
     ]
+
+    print(" ".join(mount_command))
 
     os.mkdir(mount_point)
     run_command(mount_command)
@@ -140,20 +144,18 @@ def mount_Image(ISO_Path):
 def unmount_Image(mount_point):
     unmount_command = [
         "hdiutil",
-        "detach", mount_point
+        "detach",
+        mount_point
     ]
     run_command(unmount_command)
     ##os.remove(mount_point) thought we needed this but i guess not...
     return True
 
 
-
 def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
-
     input_vobList = []
 
-
-    #find all of the vobs we want to concatenate
+    # find all of the vobs we want to concatenate
     for dirName, subdirList, fileList in os.walk(mount_point):
         for fname in fileList:
             if fname.split("_")[0] == "VTS" and fname.split(".")[-1] == "VOB":
@@ -169,8 +171,7 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
         has_vobs = True
         input_vobList.sort()
 
-
-      ##this portion performs the copy of the VOBs to the SAN. They are concatenated after the copy so the streams are in the right order
+    ##this portion performs the copy of the VOBs to the SAN. They are concatenated after the copy so the streams are in the right order
 
     try:
         delset_path = os.path.dirname(first_file_path)
@@ -186,17 +187,15 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
         print(v_name)
         out_vob_path = first_file_path + ".VOBS/" + v_name
 
-        command = [
-            ffmpeg_command,
+        command = ffmpeg_command.split(" ")
+        command += [
             "-i ", v,
-            "-map", "0:v:0",
-            "-map 0:a:0? -f vob -b:v 9M -b:a 192k -y",
+            "-map", "0:v:0","-map", "0:a:0?",
+            "-f", "vob", "-b:v", "9M", "-b:a", "192k", "-y",
             out_vob_path
         ]
-
-                                                                                                                   "]
-
         print(" ".join(command))
+        # "]
         run_command(command)
 
 
@@ -206,7 +205,7 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
     except OSError:
         pass
 
-    #writing list of vobs to concat
+    # writing list of vobs to concat
     f = open(first_file_path + ".mylist.txt", "w")
     for v in input_vobList:
         v_name = v.split("/")[-1]
@@ -216,6 +215,7 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
     f.close()
 
     return has_vobs
+
 
 def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_command):
     command = [
@@ -228,7 +228,7 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
     command += transcode_string.split()
 
     extension = os.path.splitext(first_file_path)[1]
-    output_path = first_file_path.replace(extension,output_ext)
+    output_path = first_file_path.replace(extension, output_ext)
     command.append(output_path)
     print(" ".join(command))
     run_command(command)
@@ -238,8 +238,12 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
     # print(ffmpeg_vob_concat_string)
     # run_command(ffmpeg_vob_concat_string)
 
+
 def run_command(command):
-    return subprocess.check_call(command, shell=True)
+    # output = subprocess.run(command, shell=True)
+    output = subprocess.run(command, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+    return output.stdout,output.stderr
 
 # Used to make colored text
 class bcolors:
@@ -251,6 +255,7 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
 
 # Standard boilerplate to call the main() function to begin
 # the program.
