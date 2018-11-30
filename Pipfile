@@ -5,8 +5,8 @@ name = "pypi"
 
 [packages]
 
-
 [dev-packages]
+coverage = "*"
 pytest = "*"
 tox = "*"
 sphinx = "*"
