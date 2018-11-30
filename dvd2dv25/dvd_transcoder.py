@@ -35,9 +35,9 @@ def main():
         print(bcolors.FAIL + "Please enter an input file!" + bcolors.ENDC)
         quit()
     if args.f is None:
-        output_format = "v210"
-        transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24le "
-        output_ext = ".mov"
+        output_format = "H.264"
+        transcode_string = " -c:v libx264 -pix_fmt yuv420p -movflags faststart -b:v 3500000 -b:a 160000 -ar 48000 -s 640x480 -vf yadif "
+        output_ext = ".mp4"
     elif "v210" in args.f:
         output_format = "v210"
         transcode_string = " -movflags write_colr+faststart -color_primaries smpte170m -color_trc bt709 -colorspace smpte170m -color_range mpeg -vf 'setfield=bff,setdar=4/3' -c:v v210 -c:a pcm_s24le "
