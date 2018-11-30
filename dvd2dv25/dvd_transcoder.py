@@ -14,6 +14,7 @@ import csv  # used for creating the csv
 import subprocess  # used for running ffmpeg, qcli, and rsync
 import shlex  # used for properly splitting the ffmpeg/rsync strings
 import argparse  # used for parsing input arguments
+import shutil
 import time
 
 def main():
@@ -143,7 +144,7 @@ def unmount_Image(mount_point):
         mount_point
     ]
     run_command(unmount_command)
-    ##os.remove(mount_point) thought we needed this but i guess not...
+    shutil.rmtree(mount_point)
     return True
 
 
@@ -177,9 +178,9 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
     input_vobList_length = len(input_vobList)
     iterCount = 1
     for v in input_vobList:
-        print(v)
+        # print(v)
         v_name = v.split("/")[-1]
-        print(v_name)
+        # print(v_name)
         out_vob_path = first_file_path + ".VOBS/" + v_name
 
         command = ffmpeg_command.split(" ")
@@ -224,7 +225,7 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
     extension = os.path.splitext(first_file_path)[1]
     output_path = first_file_path.replace(extension, output_ext)
     command.append(output_path)
-    print(" ".join(command))
+    # print(" ".join(command))
     run_command(command)
 
     # ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
