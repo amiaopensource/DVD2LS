@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/amiaopensource/dvd2dv25.svg?branch=master)](https://travis-ci.org/amiaopensource/dvd2dv25)
+[![Build Status](https://travis-ci.org/amiaopensource/DVD2LS.svg?branch=master)](https://travis-ci.org/amiaopensource/DVD2LS)
 # DVD2LS
 Python utility for converting extracted dvd iso .vob files to DV25 video files
 
