@@ -15,6 +15,9 @@ import subprocess  # used for running ffmpeg, qcli, and rsync
 import shlex  # used for properly splitting the ffmpeg/rsync strings
 import argparse  # used for parsing input arguments
 import shutil
+import tempfile
+
+from dvd2dv25 import iso
 import time
 
 
@@ -72,18 +75,22 @@ def main():
     print("Removing Temporary Files")
 
     # This parts mounts the iso
-    print("Mounting ISO...")
-    mount_point = mount_Image(args.i)
-    print("Finished Mounting ISO!")
+    # print("Mounting ISO...")
+    extractor = iso.Extractor(args.i)
+    temp_dir = tempfile.mkdtemp()
+    mount_point = os.path.dirname(os.path.join(temp_dir, "extractor"))
+    with extractor as e:
+        for file_path, compressed_file in e:
+            print("Extracting {}".format(str(compressed_file.name, encoding="utf8")))
+            # dst = os.path.dirname(os.path.join(temp_dir, "extractor"))
+            e.extract(compressed_file, dest=mount_point)
 
-    ##this part processes the vobs
+    # this part processes the vobs
+    # move each vob over as a seperate file, adding each vob to a list to be
+    # concatenated
 
-    ##move each vob over as a seperate file, adding each vob to a list to be concatenated
     print("Moving VOBs to Local directory...")
-    if move_VOBS_to_local(args.i, mount_point, ffmpeg_command):
-        print("Finished moving VOBs to local directory!")
-    else:
-        print("No VOBs found. Quitting!")
+    move_VOBS_to_local(args.i, mount_point, ffmpeg_command)
 
     # concatenate vobs into a sungle file, format of the user's selection
     concatenate_VOBS(args.i, transcode_string, output_ext, ffmpeg_command)
@@ -103,50 +110,8 @@ def main():
     os.rmdir(args.i + ".VOBS")
     print("Finished Removing Temporary Files!")
 
-    # This parts unmounts the iso
-    print("Unmounting ISO")
-    unmount_Image(mount_point)
-    print("Finished Unmounting ISO!")
 
     return
-
-
-def mount_Image(ISO_Path):
-    mount_point_exists = True
-    mount_increment = 0
-
-    ##figure out what the mountpoint will be
-    while mount_point_exists:
-        mount_point = "ISO_Volume_" + str(mount_increment)
-        mount_point_exists = os.path.isdir("/private/tmp/" + mount_point)
-        mount_increment = mount_increment + 1
-
-    ##mount ISO
-    mount_point = "/private/tmp/" + mount_point
-
-    mount_command = [
-        "hdiutil",
-        "attach",
-        ISO_Path,
-        "-mountpoint",
-        mount_point,
-    ]
-
-    os.mkdir(mount_point)
-    run_command(mount_command)
-
-    return mount_point
-
-
-def unmount_Image(mount_point):
-    unmount_command = [
-        "hdiutil",
-        "detach",
-        mount_point
-    ]
-    run_command(unmount_command)
-    shutil.rmtree(mount_point)
-    return True
 
 
 def move_VOBS_to_local(temp_destination, vob_source, ffmpeg_command):
@@ -162,9 +127,7 @@ def move_VOBS_to_local(temp_destination, vob_source, ffmpeg_command):
         os.mkdir(vob_temp_dir)
     except OSError:
         pass
-
     stream_copy_vobs_to_temp_dir(ffmpeg_command, input_vobList, vob_temp_dir)
-
     # writing list of vobs to concat
     vob_list_file = temp_destination + ".mylist.txt"
 
@@ -230,9 +193,12 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
 
     extension = os.path.splitext(first_file_path)[1]
     output_path = first_file_path.replace(extension, output_ext)
+    command.append("-y")
     command.append(output_path)
     # print(" ".join(command))
+    # print(command)
     run_command(command)
+    # print("concat done")
 
     # ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
 
