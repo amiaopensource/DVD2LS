@@ -15,7 +15,11 @@ import subprocess  # used for running ffmpeg, qcli, and rsync
 import shlex  # used for properly splitting the ffmpeg/rsync strings
 import argparse  # used for parsing input arguments
 import shutil
+import tempfile
+
+from dvd2dv25 import iso
 import time
+
 
 def main():
 
@@ -71,18 +75,22 @@ def main():
     print("Removing Temporary Files")
 
     # This parts mounts the iso
-    print("Mounting ISO...")
-    mount_point = mount_Image(args.i)
-    print("Finished Mounting ISO!")
+    # print("Mounting ISO...")
+    extractor = iso.Extractor(args.i)
+    temp_dir = tempfile.mkdtemp()
+    mount_point = os.path.dirname(os.path.join(temp_dir, "extractor"))
+    with extractor as e:
+        for file_path, compressed_file in e:
+            print("Extracting {}".format(str(compressed_file.name, encoding="utf8")))
+            # dst = os.path.dirname(os.path.join(temp_dir, "extractor"))
+            e.extract(compressed_file, dest=mount_point)
 
-    ##this part processes the vobs
+    # this part processes the vobs
+    # move each vob over as a seperate file, adding each vob to a list to be
+    # concatenated
 
-    ##move each vob over as a seperate file, adding each vob to a list to be concatenated
     print("Moving VOBs to Local directory...")
-    if move_VOBS_to_local(args.i, mount_point, ffmpeg_command):
-        print("Finished moving VOBs to local directory!")
-    else:
-        print("No VOBs found. Quitting!")
+    move_VOBS_to_local(args.i, mount_point, ffmpeg_command)
 
     # concatenate vobs into a sungle file, format of the user's selection
     concatenate_VOBS(args.i, transcode_string, output_ext, ffmpeg_command)
@@ -102,91 +110,52 @@ def main():
     os.rmdir(args.i + ".VOBS")
     print("Finished Removing Temporary Files!")
 
-    # This parts unmounts the iso
-    print("Unmounting ISO")
-    unmount_Image(mount_point)
-    print("Finished Unmounting ISO!")
 
     return
 
 
-def mount_Image(ISO_Path):
-    mount_point_exists = True
-    mount_increment = 0
+def move_VOBS_to_local(temp_destination, vob_source, ffmpeg_command):
+    # find all of the vobs we want to concatenate
+    input_vobList = find_all_vobs(vob_source)
 
-    ##figure out what the mountpoint will be
-    while mount_point_exists:
-        mount_point = "ISO_Volume_" + str(mount_increment)
-        mount_point_exists = os.path.isdir("/private/tmp/" + mount_point)
-        mount_increment = mount_increment + 1
+    # this portion performs the copy of the VOBs to the SAN. They are
+    # concatenated after the copy so the streams are in the right order
 
-    ##mount ISO
-    mount_point = "/private/tmp/" + mount_point
+    vob_temp_dir = temp_destination + ".VOBS/"
 
-    mount_command = [
-        "hdiutil",
-        "attach",
-        ISO_Path,
-        "-mountpoint",
-        mount_point,
-    ]
+    try:
+        os.mkdir(vob_temp_dir)
+    except OSError:
+        pass
+    stream_copy_vobs_to_temp_dir(ffmpeg_command, input_vobList, vob_temp_dir)
+    # writing list of vobs to concat
+    vob_list_file = temp_destination + ".mylist.txt"
 
-    os.mkdir(mount_point)
-    run_command(mount_command)
+    write_voblist_file(vob_list_file, input_vobList, vob_temp_dir)
 
-    return mount_point
-
-
-def unmount_Image(mount_point):
-    unmount_command = [
-        "hdiutil",
-        "detach",
-        mount_point
-    ]
-    run_command(unmount_command)
-    shutil.rmtree(mount_point)
     return True
 
 
-def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
-    input_vobList = []
+def write_voblist_file(filename, input_vobList, vob_temp_dir):
+    with open(filename, "w") as f:
+        for v in input_vobList:
+            v_name = v.split("/")[-1]
+            out_vob_path = vob_temp_dir + v_name
+            f.write("file '" + out_vob_path + "'")
+            f.write("\n")
 
-    # find all of the vobs we want to concatenate
-    for dirName, subdirList, fileList in os.walk(mount_point):
-        for fname in fileList:
-            if fname.split("_")[0] == "VTS" and fname.split(".")[-1] == "VOB":
-                vobNum = fname.split("_")[-1]
-                vobNum = vobNum.split(".")[0]
-                vobNum = int(vobNum)
-                if vobNum > 0:
-                    input_vobList.append(dirName + "/" + fname)
-    ##Returns False if there are no VOBs found, otherwise it moves on
-    if len(input_vobList) == 0:
-        has_vobs = False
-    else:
-        has_vobs = True
-        input_vobList.sort()
 
-    ##this portion performs the copy of the VOBs to the SAN. They are concatenated after the copy so the streams are in the right order
-
-    try:
-        delset_path = os.path.dirname(first_file_path)
-        os.mkdir(first_file_path + ".VOBS/")
-    except OSError:
-        pass
-
-    input_vobList_length = len(input_vobList)
-    iterCount = 1
+def stream_copy_vobs_to_temp_dir(ffmpeg_command, input_vobList, vob_temp_dir):
     for v in input_vobList:
         # print(v)
         v_name = v.split("/")[-1]
         # print(v_name)
-        out_vob_path = first_file_path + ".VOBS/" + v_name
+        out_vob_path = vob_temp_dir + v_name
 
         command = ffmpeg_command.split(" ")
         command += [
             "-i", v,
-            "-map", "0:v:0","-map", "0:a:0?",
+            "-map", "0:v:0", "-map", "0:a:0?",
             "-f", "vob", "-b:v", "9M", "-b:a", "192k", "-y",
             out_vob_path
         ]
@@ -194,22 +163,22 @@ def move_VOBS_to_local(first_file_path, mount_point, ffmpeg_command):
         run_command(command)
 
 
-    ##see if mylist already exists, if so delete it.
-    try:
-        os.remove(first_file_path + ".mylist.txt")
-    except OSError:
-        pass
+def find_all_vobs(search_path):
 
-    # writing list of vobs to concat
-    f = open(first_file_path + ".mylist.txt", "w")
-    for v in input_vobList:
-        v_name = v.split("/")[-1]
-        out_vob_path = first_file_path + ".VOBS/" + v_name
-        f.write("file '" + out_vob_path + "'")
-        f.write("\n")
-    f.close()
-
-    return has_vobs
+    input_vobList = []
+    for dirName, subdirList, fileList in os.walk(search_path):
+        for fname in fileList:
+            if fname.split("_")[0] == "VTS" and fname.split(".")[-1] == "VOB":
+                vobNum = fname.split("_")[-1]
+                vobNum = vobNum.split(".")[0]
+                vobNum = int(vobNum)
+                if vobNum > 0:
+                    input_vobList.append(dirName + "/" + fname)
+    if len(input_vobList) == 0:
+        raise FileNotFoundError("No Vobs located in {}".format(search_path))
+    else:
+        input_vobList.sort()
+    return input_vobList
 
 
 def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_command):
@@ -224,9 +193,12 @@ def concatenate_VOBS(first_file_path, transcode_string, output_ext, ffmpeg_comma
 
     extension = os.path.splitext(first_file_path)[1]
     output_path = first_file_path.replace(extension, output_ext)
+    command.append("-y")
     command.append(output_path)
     # print(" ".join(command))
+    # print(command)
     run_command(command)
+    # print("concat done")
 
     # ffmpeg_vob_concat_string = ffmpeg_command + " -vsync 0 -f concat -safe 0 -i '" + catList + "' " + transcode_string + " '" + output_path + "'"
 
