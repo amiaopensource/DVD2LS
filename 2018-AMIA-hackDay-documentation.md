@@ -6,7 +6,7 @@ November 28, 2018
 ### Project to be revived:
 
 DVD generation
-HOW DO WE JUST RIP DVDs to [insert common deriv] (for quick transcodes) 
+HOW DO WE JUST RIP DVDs to MP4 (for quick transcodes) 
 Generate scripts COMBINED with workflow documentation for a basic how-to
 Proposed by Kathryn Gronsbell and Ben Turkus
 
