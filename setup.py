@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(
-    name='dvd2dv25',
+    name='DVD2LS',
     version='0.1.0',
-    packages=['dvd2dv25'],
+    packages=['dvd2ls'],
     url='',
     license='',
     author='AMIA Open Source',
@@ -12,10 +12,10 @@ setup(
     test_suite="tests",
     tests_require=['pytest'],
     setup_requires=['pytest-runner'],
-    install_requires=['isoparser'],
+    install_requires=['isoparser', 'six'],
     entry_points={
         'console_scripts': [
-            "dvd2dv25 = dvd2dv25.dvd_transcoder:main"
+            "dvd2ls = dvd2ls.dvd_transcoder:main"
         ]
     }
 )

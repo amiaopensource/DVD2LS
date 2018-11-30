@@ -17,7 +17,7 @@ import argparse  # used for parsing input arguments
 import shutil
 import tempfile
 
-from dvd2dv25 import iso
+from dvd2ls import iso
 import time
 
 
@@ -81,7 +81,7 @@ def main():
     mount_point = os.path.dirname(os.path.join(temp_dir, "extractor"))
     with extractor as e:
         for file_path, compressed_file in e:
-            print("Extracting {}".format(str(compressed_file.name, encoding="utf8")))
+            print("Extracting {}".format(str(compressed_file.name)))
             # dst = os.path.dirname(os.path.join(temp_dir, "extractor"))
             e.extract(compressed_file, dest=mount_point)
 

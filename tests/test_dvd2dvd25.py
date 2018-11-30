@@ -1,6 +1,6 @@
 import pytest
 
-from dvd2dv25 import dvd_transcoder
+from dvd2ls import dvd_transcoder
 import subprocess
 import os
 

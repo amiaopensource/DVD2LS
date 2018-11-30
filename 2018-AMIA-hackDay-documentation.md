@@ -12,7 +12,7 @@ Proposed by Kathryn Gronsbell and Ben Turkus
 
 PROJECT: DVD transcoder
 
-Github repository: https://github.com/amiaopensource/dvd2dv25
+Github repository: https://github.com/amiaopensource/DVD2LS
 
 Ripping the DVD // possible to do with CLI tools for free on any computer
 Issue: script works but it’s not super accessible
@@ -31,11 +31,12 @@ Part where we actually make the ISO from a DVD
 Step one: Rip the dvd and create an ISO for your “preservation file”
 Step two (for access/production needs): Need to get information from ISO into a file -- tricky because DVD structures with MPEG-2 are difficult
 
-How to run the sample (in terminal): drop in DVD transcode python script + ISO (make sure your permissions are correct -- more on this later)
+How to run the sample (in terminal): drop in DVD transcode python script + ISO
+
+Updates to the code have fixed mountpoint issues. The ISO no longer needs to be mounted in order to have the data extracted.
 
 ## Goal
 
-Identify mount points
 Rip the DVD
 Create the ISO
 Transcode the .VOBs inside the ISO to an access format (like DV)

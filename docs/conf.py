@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'dvd2dv25'
+project = 'dvd2ls'
 # TODO: Set copyright info
 copyright = '2018, Henry Borchers'
 # TODO: Set authors info
@@ -131,7 +131,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'dvd2dv25.tex', 'dvd2dv25 Documentation',
+    (master_doc, 'dvd2ls.tex', 'dvd2ls Documentation',
      author, 'manual'),
 ]
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'dvd2dv25', 'dvd2dv25 Documentation',
+    (master_doc, 'dvd2ls', 'dvd2ls Documentation',
      [author], 1)
 ]
 
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'dvd2dv25', 'dvd2dv25 Documentation',
-     author, 'dvd2dv25', 'One line description of project.',
+    (master_doc, 'dvd2ls', 'dvd2ls Documentation',
+     author, 'dvd2ls', 'One line description of project.',
      'Miscellaneous'),
 ]
 

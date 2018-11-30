@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+# Deprecated legacy code. Do not use!
 # Created at AMIA Hackday2015 by Dianne Dietrich, Morgan Morel, Brendan Coates, Tre Berney, and Sadie Roosa
+
+
 
 import sys
 import glob

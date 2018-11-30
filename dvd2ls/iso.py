@@ -14,7 +14,7 @@ class Extractor:
                 dst = os.path.dirname(os.path.join(root_dir, path_name))
                 e.extract(compressed_file, dest=dst)
     """
-    def __init__(self, filename) -> None:
+    def __init__(self, filename):
         self._filename = filename
 
     def __iter__(self):
@@ -32,7 +32,7 @@ class Extractor:
 
     def _list(self, item, starting_directory=""):
 
-        new_item_path = os.path.join(starting_directory, str(item.name, encoding="utf-8"))
+        new_item_path = os.path.join(starting_directory, str(item.name))
         if item.is_directory:
             yield starting_directory, item
 
@@ -44,9 +44,9 @@ class Extractor:
             yield new_item_path, item
 
     def extract(self, record, dest):
-        new_item = os.path.join(dest, str(record.name, encoding="utf-8"))
+        new_item = os.path.join(dest, str(record.name))
         if record.is_directory:
-            os.makedirs(new_item, exist_ok=True)
+            os.makedirs(new_item)
         else:
             with open(new_item, "wb") as fw:
                 fw.write(record.content)

@@ -1,20 +1,20 @@
 [![Build Status](https://travis-ci.org/amiaopensource/dvd2dv25.svg?branch=master)](https://travis-ci.org/amiaopensource/dvd2dv25)
-# dvd2dv25
+# DVD2LS
 Python utility for converting extracted dvd iso .vob files to DV25 video files
 
 ## Usage
-python dvd2dv25.py [path_to_VIDEO_TS] [path_to_output]
+python DVD2LS.py [path_to_VIDEO_TS] [path_to_output]
 
 ## Install
 
-To install, open a terminal and run the following command from the dvd2dv25 
+To install, open a terminal and run the following command from the DVD2LS 
 directory 
 
 `python setup.py install`
 
 ## Documentation
 
-To build HTML documentation, open a terminal and run the following command from the dvd2dv25 
+To build HTML documentation, open a terminal and run the following command from the DVD2LS 
 directory  
 
 `python setup.py build_sphinx`
@@ -25,7 +25,7 @@ directory
 ## Development
 
 if you have pipenv installed you can create a development environment with 
-the following command run inside the dvd2dv25 source directory.
+the following command run inside the DVD2LS source directory.
 
 `pipenv install --dev`
 
