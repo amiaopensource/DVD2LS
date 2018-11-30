@@ -44,7 +44,8 @@ class Extractor:
             yield new_item_path, item
 
     def extract(self, record, dest):
-        new_item = os.path.join(dest, str(record.name))
+        filename = record.name.decode()
+        new_item = os.path.join(dest, filename)
         if record.is_directory:
             os.makedirs(new_item)
         else:

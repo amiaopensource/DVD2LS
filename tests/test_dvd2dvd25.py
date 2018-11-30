@@ -25,32 +25,6 @@ def no_running(monkeypatch):
     return
 
 
-def test_mount_Image(no_running):
-    try:
-        dvd_transcoder.mount_Image("dummy.iso")
-    except GetCommand as command:
-        expected_args = [
-            "hdiutil",
-            "attach",
-            "dummy.iso",
-            "-mountpoint",
-            "/private/tmp/ISO_Volume_0"
-        ]
-        assert expected_args == command.cli_args
-
-
-def test_unmount_Image(no_running):
-    try:
-        dvd_transcoder.unmount_Image("/tmp/ISO_Volume_0")
-    except GetCommand as command:
-        expected_args = [
-            "hdiutil",
-            "detach",
-            "/tmp/ISO_Volume_0"
-        ]
-        assert expected_args == command.cli_args
-
-
 def test_concatenate_VOBS(no_running):
     try:
         dvd_transcoder.concatenate_VOBS(
@@ -69,6 +43,7 @@ def test_concatenate_VOBS(no_running):
             "-c:v", "prores_ks",
             "-profile:v", "3",
             "-c:a", "pcm_s24le",
+            "-y",
             '/tmp/dummy.mov'
         ]
         assert expected_args == command.cli_args
