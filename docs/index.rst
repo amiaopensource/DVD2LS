@@ -12,6 +12,7 @@ Welcome to dvd2ls's documentation!
 
    about
    install
+   Hackday
 
 
 
