@@ -20,10 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'dvd2ls'
-# TODO: Set copyright info
-copyright = '2018, Henry Borchers'
-# TODO: Set authors info
-author = 'Henry Borchers'
+copyright = '2018, AMIA Open Source Committee'
+author = 'Henry Borchers, Michael Campos-Quinn, Claire Fox, Morgan Oscar Morel'
 
 # The short X.Y version
 version = ''

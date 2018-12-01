@@ -97,3 +97,8 @@ Basic tools we found useful/wish we had
 Whiteboard/dry erase markers!
 DVD drive
 DVDs
+
+Credits
+-------
+
+author = ['Henry Borchers', 'Michael Campos-Quinn', 'Claire Fox', 'Morgan Oscar Morel']
