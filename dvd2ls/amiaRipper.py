@@ -136,6 +136,10 @@ def check_ddrescue():
 	else:
 		return False
 
+def eject_disc():
+	out = subprocess.Popen(['drutil', 'eject'], stdout=subprocess.PIPE)
+	out.communicate()
+
 
 def main():
 	args = set_args()
@@ -160,6 +164,7 @@ def main():
 		availableDevPoints,
 		outputPath
 	)
+	eject_disc()
 	for key, value in ripStatus.items():
 		# print(value)
 		print(ripStatus[key]['status'])
