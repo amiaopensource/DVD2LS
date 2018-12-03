@@ -51,9 +51,7 @@ def get_devs():
 			availableDevPoints[devPointCounter][mountPoint] = humanName.split('/')[-1]
 			devPointCounter += 1
 
-	# print(availableDevPoints)
 	return availableDevPoints
-
 
 def ask_which_mount(availableDevPoints):
 	print("here are the mounted volumes on the system:")
@@ -86,11 +84,9 @@ def ask_which_mount(availableDevPoints):
 			pass
 
 	else:
-		selections = selection
+		selections = [int(selection)]
 
-	print(selections)
 	return (selections)
-
 
 def unmount_volume(volume):
 	umountStatus = False
@@ -136,7 +132,22 @@ def run_ddrescue(ddrescuePath, selections, availableDevPoints, outputPath):
 				stderr=subprocess.PIPE
 			)
 			out, err = process.communicate()
-			availableDevPoints[int(volume)]['status'] = "{} | {}".format(out, err)
+			availableDevPoints[int(volume)]['status'] = (\
+				"DDRESCUE OUTPUT:\n{} \nDDRESCUE ERRORS: {}".format(out, err)
+				)
+			# print(availableDevPoints)
+	return availableDevPoints
+
+def clean_dev_dict(availableDevPoints,selections):
+	'''
+	Trim out /dev/disk listings that are not in the user's
+	selections.
+	'''
+	badKeys = [key for key in availableDevPoints.keys() \
+		if not key in selections]
+	for key in badKeys:
+		availableDevPoints.pop(key)
+
 	return availableDevPoints
 
 
@@ -170,6 +181,7 @@ def main():
 
 	availableDevPoints = get_devs()
 	selections = ask_which_mount(availableDevPoints)
+	availableDevPoints = clean_dev_dict(availableDevPoints,selections)
 	ripStatus = run_ddrescue(
 		ddrescuePath,
 		selections,
@@ -178,9 +190,7 @@ def main():
 	)
 	eject_disc()
 	for key, value in ripStatus.items():
-		# print(value)
 		print(ripStatus[key]['status'])
-
 
 if __name__ == '__main__':
 	main()
