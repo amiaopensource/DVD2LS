@@ -1,9 +1,6 @@
 [![Build Status](https://travis-ci.org/amiaopensource/DVD2LS.svg?branch=master)](https://travis-ci.org/amiaopensource/DVD2LS)
 # DVD2LS
-Python utility for converting extracted dvd iso .vob files to DV25 video files
-
-## Usage
-python DVD2LS.py [path_to_VIDEO_TS] [path_to_output]
+Python based app for ripping DVD to ISO, and converting extracted ISO .vob files to an access video file.
 
 ## Install
 
@@ -11,6 +8,25 @@ To install, open a terminal and run the following command from the DVD2LS
 directory 
 
 `python setup.py install`
+
+## Usage
+
+### Ripping a DVD to ISO
+
+`dvdrip -o [PATH_TO_OUTPUT_DIRECTORY]`
+
+### Transcoding ISO to Access File
+
+`dvdtranscode -i [PATH_TO_ISO] -f [OUTPUT_FORMAT]`
+
+### Available Output Formats
+
+```
+H.264
+v210
+ProRes
+FFv1
+```
 
 ## Documentation
 
