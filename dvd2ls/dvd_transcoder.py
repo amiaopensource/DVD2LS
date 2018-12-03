@@ -8,17 +8,12 @@
 #
 #
 # import modules used here -- sys is a very standard one
-import os, sys
-import datetime
-import csv  # used for creating the csv
+import os
 import subprocess  # used for running ffmpeg, qcli, and rsync
-import shlex  # used for properly splitting the ffmpeg/rsync strings
 import argparse  # used for parsing input arguments
-import shutil
 import tempfile
 
 from dvd2ls import iso
-import time
 
 
 def main():

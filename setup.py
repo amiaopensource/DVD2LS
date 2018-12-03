@@ -15,7 +15,8 @@ setup(
     install_requires=['isoparser', 'six'],
     entry_points={
         'console_scripts': [
-            "dvd2ls = dvd2ls.dvd_transcoder:main"
+            "dvdtranscode = dvd2ls.dvd_transcoder:main",
+            "dvdrip = dvd2ls.amiaRipper:main"
         ]
     }
 )

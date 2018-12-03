@@ -29,3 +29,6 @@ the following command run inside the DVD2LS source directory.
 
 `pipenv install --dev`
 
+## Credits
+
+The scripting and documentation was created by author = ['Henry Borchers', 'Michael Campos-Quinn', 'Claire Fox', 'Morgan Oscar Morel']

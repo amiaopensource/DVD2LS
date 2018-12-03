@@ -140,8 +140,17 @@ def eject_disc():
 	out = subprocess.Popen(['drutil', 'eject'], stdout=subprocess.PIPE)
 	out.communicate()
 
+#This function binds raw_input() to input() so that the script is Pyton 2.7 compatible
+def bind_input():
+	try:
+		input = raw_input
+	except NameError:
+		pass
+	return input
+
 
 def main():
+	input = bind_input()
 	args = set_args()
 	outputPath = args.outputPath
 	if not outputPath:
