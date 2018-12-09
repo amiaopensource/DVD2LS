@@ -4,6 +4,15 @@ import os
 import subprocess
 import sys
 
+# This code block binds
+# raw_input() to input() 
+# so that the script is Pyton 2.7 compatible
+######################
+try:
+    input = raw_input
+except NameError:
+    pass
+######################
 
 def set_args():
 	parser = argparse.ArgumentParser()
@@ -42,18 +51,20 @@ def get_devs():
 			availableDevPoints[devPointCounter][mountPoint] = humanName.split('/')[-1]
 			devPointCounter += 1
 
-	# print(availableDevPoints)
 	return availableDevPoints
-
 
 def ask_which_mount(availableDevPoints):
 	print("here are the mounted volumes on the system:")
 	for key, value in availableDevPoints.items():
 		for k, v in value.items():
-			print("NUMBER: {} ... Name: {}".format(key, v))
-	selection = str(input("Please enter the NUMBER for the volumes " \
-						  "you want to rip. Separate multiple selections with a comma (eg 1,2): "))
-	# print(selection)
+			print("NUMBER: {} ... Actual Name: {}".format(key, v))
+	selection = str(
+		input(
+			"Please enter the NUMBER for the volumes " \
+			"you want to rip. Separate multiple selections " \
+			"with a comma (eg 1,2): "
+			)
+		)
 	if len(selection) > 1:
 		try:
 			selections = [
@@ -73,20 +84,20 @@ def ask_which_mount(availableDevPoints):
 			pass
 
 	else:
-		selections = selection
+		selections = [int(selection)]
 
-	print(selections)
 	return (selections)
-
 
 def unmount_volume(volume):
 	umountStatus = False
 	message = ''
 	command = ["diskutil", "umount", volume]
-	process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	# stdout = out.stdout
+	process = subprocess.Popen(
+		command, 
+		stdout=subprocess.PIPE, 
+		stderr=subprocess.PIPE
+		)
 	out, err = process.communicate()
-	# print(stdout,err)
 
 	if not err.decode() == '':
 		message = err
@@ -97,7 +108,6 @@ def unmount_volume(volume):
 
 
 def run_ddrescue(ddrescuePath, selections, availableDevPoints, outputPath):
-	# print(availableDevPoints)
 	for volume in selections:
 		mountDetails = availableDevPoints[int(volume)]
 		mountPath = list(mountDetails.keys())[0]
@@ -116,15 +126,28 @@ def run_ddrescue(ddrescuePath, selections, availableDevPoints, outputPath):
 				isoPath,
 				logPath
 			]
-			# print(' '.join(ddrescueCommand))
 			process = subprocess.Popen(
 				ddrescueCommand,
 				stdout=subprocess.PIPE,
 				stderr=subprocess.PIPE
 			)
 			out, err = process.communicate()
-			# out,err = out.stdout.decode(),out.stderr.decode()
-			availableDevPoints[int(volume)]['status'] = "{} | {}".format(out, err)
+			availableDevPoints[int(volume)]['status'] = (\
+				"DDRESCUE OUTPUT:\n{} \nDDRESCUE ERRORS: {}".format(out, err)
+				)
+			# print(availableDevPoints)
+	return availableDevPoints
+
+def clean_dev_dict(availableDevPoints,selections):
+	'''
+	Trim out /dev/disk listings that are not in the user's
+	selections.
+	'''
+	badKeys = [key for key in availableDevPoints.keys() \
+		if not key in selections]
+	for key in badKeys:
+		availableDevPoints.pop(key)
+
 	return availableDevPoints
 
 
@@ -140,21 +163,12 @@ def eject_disc():
 	out = subprocess.Popen(['drutil', 'eject'], stdout=subprocess.PIPE)
 	out.communicate()
 
-#This function binds raw_input() to input() so that the script is Pyton 2.7 compatible
-def bind_input():
-	try:
-		input = raw_input
-	except NameError:
-		pass
-	return input
-
-
 def main():
-	input = bind_input()
 	args = set_args()
 	outputPath = args.outputPath
 	if not outputPath:
-		outputPath = input("Please drag in a folder where you want your output to live:")
+		outputPath = input("Please drag in a folder " \
+			"where you want your output to live:")
 	outputPath = outputPath.rstrip()
 	if not os.path.isdir(outputPath):
 		print("your output path is bunk. try again.")
@@ -167,6 +181,7 @@ def main():
 
 	availableDevPoints = get_devs()
 	selections = ask_which_mount(availableDevPoints)
+	availableDevPoints = clean_dev_dict(availableDevPoints,selections)
 	ripStatus = run_ddrescue(
 		ddrescuePath,
 		selections,
@@ -175,9 +190,7 @@ def main():
 	)
 	eject_disc()
 	for key, value in ripStatus.items():
-		# print(value)
 		print(ripStatus[key]['status'])
-
 
 if __name__ == '__main__':
 	main()
